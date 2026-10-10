@@ -6,7 +6,9 @@ app.use(express.json({ limit: '100kb' }));
 app.use(express.static(new URL('.', import.meta.url).pathname));
 const PORT = Number(process.env.PORT || 3000);
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
-
+app.get('/', (_req, res) => {
+res.sendFile(new URL('./public/index.html', import.meta.url).pathname);
+});
 app.get('/health', (_req, res) => res.json({ ok: true, service: 'JualanAI Threads backend' }));
 
 app.post('/api/threads/generate', async (req, res) => {
