@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JualanAI Mudah V15 - Siap Integrasi AI</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#17191f;font-family:Arial,sans-serif}
+.wrap{max-width:1120px;margin:auto;padding:16px}.top{background:#111318;color:#fff;border-radius:20px;padding:24px}
+.brand{font-size:23px;font-weight:800}.gold{color:#e6b94f}.top h1{font-size:32px;line-height:1.1;margin:22px 0 8px}.top p{color:#c9ced7;margin:0}
+.main{display:grid;grid-template-columns:350px 1fr;gap:16px;margin-top:16px}.card{background:#fff;border:1px solid #e1e4ea;border-radius:18px;padding:18px;box-shadow:0 5px 18px #00000008}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}input,textarea,select{width:100%;padding:11px;border:1px solid #d6d9e0;border-radius:10px;font-size:14px}textarea{min-height:70px}
+.tools{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}.tool{padding:13px;border:1px solid #e1e3e8;border-radius:12px;background:#fff;text-align:left;cursor:pointer}.tool:hover{border-color:#e5b94f}.tool b{display:block}.tool span{display:block;font-size:11px;color:#777f8d;margin-top:4px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}button{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer}button.primary{background:#e6b94f;color:#111}button.dark{background:#111318;color:#fff}button.light{background:#eceef2;color:#222}button:disabled{opacity:.45;cursor:not-allowed}
+.result{min-height:620px}.status{padding:10px;background:#f7f8fa;border-radius:10px;color:#6f7682;font-size:12px;margin-top:10px}.output{margin-top:14px;background:#111318;color:#fff;border-radius:14px;padding:16px;white-space:pre-wrap;line-height:1.5;min-height:180px}
+.hidden{display:none}.section{margin-top:15px}.section h3{margin:0 0 8px}.days{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.day{border:1px solid #dddfe5;border-radius:10px;padding:10px}.day b{display:block;margin-bottom:4px}.day span{font-size:12px;color:#6f7682}
+.carousel{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.slide{border:1px solid #ddd;border-radius:12px;padding:8px}.slide canvas{width:100%;display:block;border-radius:8px}.slide button{width:100%;margin-top:6px}
+.videoBox{background:#080a0e;border-radius:14px;padding:12px;text-align:center}.videoBox canvas{width:min(300px,100%);border-radius:12px;background:#17191f}
+.small{font-size:12px;color:#777f8d;line-height:1.5}.howto{background:#fff8e5;border:1px solid #f0dca1;border-radius:14px;padding:13px;margin-top:14px;line-height:1.5;font-size:13px}.step{display:flex;gap:10px;align-items:flex-start;margin:8px 0}.stepnum{background:#e6b94f;color:#111;border-radius:50%;min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:800}
+@media(max-width:760px){.main{grid-template-columns:1fr}.tools,.days,.carousel{grid-template-columns:1fr}.top h1{font-size:27px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top">
+ <div class="brand">Jualan<span class="gold">AI</span> Mudah</div>
+ <h1>Bikin konten jualan tanpa ribet.</h1>
+ <p>Isi produk sekali, pilih konten yang dibutuhkan, lalu salin dan gunakan.</p>
+</div>
+
+<div class="main">
+<div class="card">
+ <h2>1. Isi Produk</h2>
+ <p class="small">Isi yang kamu tahu saja. Kolom calon pembeli boleh dikosongkan.</p>
+ <label>Nama produk</label><input id="product" placeholder="Contoh: Kue Kering Premium">
+ <label>Harga</label><input id="price" placeholder="Rp85.000">
+ <label>Calon pembeli <span style="font-weight:400;color:#888">(opsional)</span></label><input id="target" placeholder="Contoh: orang yang suka camilan premium">
+ <label>Keunggulan produk</label><textarea id="benefit" placeholder="Premium, tanpa pengawet, cocok untuk hampers"></textarea>
+ <label>Gaya konten</label><select id="tone" onchange="resetThreadSequence()"><option>Santai & natural</option><option>Profesional</option><option>Lucu & ringan</option><option>Elegan</option></select><div class="small" style="margin-top:5px">Gaya memengaruhi pilihan kata dan nada tulisan saat kamu membuat konten berikutnya.</div>
+ <label>Foto untuk Carousel & Video <span style="font-weight:400;color:#888">(opsional, maksimal 10)</span></label><input id="image" type="file" accept="image/*" multiple>
+ <div class="small" id="imageInfo">Foto tidak diperlukan untuk Threads. Unggah di sini hanya jika ingin membuat Carousel atau Video.</div><div id="imageGallery" style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:9px"></div>
+
+ <div class="actions"><button class="primary" onclick="example()">✨ Isi Contoh</button><button class="light" onclick="resetApp()">↺ Reset</button></div>
+
+ <h3 class="section">2. Mau bikin apa?</h3>
+ <div class="tools">
+  <button class="tool" onclick="makeThreads()"><b>🧵 1 Postingan Threads</b><span>Buat satu postingan</span></button><button class="tool" onclick="make30()"><b>🧵 Paket Threads 3 Hari</b><span>9 postingan dengan sudut pandang yang bervariasi</span></button>
+  <button class="tool" onclick="makeCarousel()"><b>🖼️ Carousel</b><span>6 gambar siap download</span></button>
+  <button class="tool" onclick="makeVideo()"><b>🎬 Video</b><span>Preview + export video</span></button>
+  <button class="tool" onclick="makeCaption()"><b>✍️ Caption</b><span>Siap Copy</span></button>
+  <button class="tool" onclick="makeSales()"><b>💰 Copy Jualan</b><span>Siap Copy</span></button>
+  <button class="tool" onclick="makeCalendar()"><b>📅 Kalender</b><span>7 hari</span></button>
+ </div>
+ <div class="status" id="status">Isi data produk lalu pilih salah satu hasil.</div>
+ <div class="section" style="border:1px solid #e1e4ea;border-radius:12px;padding:12px;background:#fbfbfc">
+  <b style="font-size:14px">Mode AI sungguhan (opsional)</b>
+  <p class="small">Setelah backend dipasang, masukkan alamat endpoint di bawah. API key tidak boleh dimasukkan di halaman ini. Kosongkan untuk memakai mode demo lokal.</p>
+  <label>Alamat backend</label><input id="aiEndpoint" placeholder="Contoh: https://domain-anda.com/api/threads/generate" autocomplete="off">
+  <div class="small">Status: <span id="aiModeStatus">Mode demo lokal</span></div>
+ </div>
+</div>
+
+<div class="card result">
+ <h2 id="resultTitle">Hasil kontenmu</h2>
+ <div class="howto"><b>Gampang kok, begini caranya:</b><div class="step"><span class="stepnum">1</span><span>Isi nama produk dan keunggulannya.</span></div><div class="step"><span class="stepnum">2</span><span>Pilih <b>Paket Threads 3 Hari</b> untuk membuat 9 postingan.</span></div><div class="step"><span class="stepnum">3</span><span>Salin teksnya. Kalau memilih foto, download foto itu juga saat posting.</span></div></div>
+ <div id="textResult" class="output">Pilih salah satu alat di sebelah kiri.</div>
+ <div class="actions" id="textActions">
+   <button class="primary" onclick="copyText()" disabled id="copyBtn">📋 Copy</button>
+   <button class="dark" onclick="downloadText()" disabled id="txtBtn">⬇ Download TXT</button>
+ </div>
+
+ <div id="thread30" class="section hidden">
+  <h3>🧵 Paket Threads 3 Hari</h3>
+  <div class="small" style="margin-bottom:10px">Ada 9 postingan untuk 3 hari. Topik disesuaikan dengan jenis produk; salin satu per satu atau unduh semua teks sekaligus.</div>
+  <div class="actions" style="margin-bottom:10px"><button class="primary" onclick="downloadThreadsPackage()">⬇ Unduh Semua Teks</button></div>
+  <div class="days" id="days"></div>
+ </div>
+
+ <div id="carouselResult" class="section hidden">
+  <h3>🖼️ Carousel — klik Download Picture</h3>
+  <div class="carousel" id="slides"></div>
+  <div class="actions"><button class="dark" onclick="downloadAllSlides()">⬇ Download Semua Pictures</button></div>
+ </div>
+
+ <div id="videoResult" class="section hidden">
+  <h3>🎬 Video</h3>
+  <div class="videoBox"><canvas id="videoCanvas" width="720" height="1280"></canvas></div>
+  <div class="actions">
+   <button class="primary" onclick="previewVideo()">▶ Preview</button>
+   <button class="dark" onclick="downloadVideo()">⬇ Download Video</button>
+  </div>
+  <div class="small">Catatan: browser biasanya merekam WebM. Saat aplikasi dipasang online dengan renderer server, tombol yang sama dapat menghasilkan MP4 secara konsisten.</div>
+ </div>
+</div>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let imageData='', imageList=[], currentText='', slidesData=[], videoScenes=[], timer=null;
+
+$('image').addEventListener('change',async e=>{
+ const files=Array.from(e.target.files||[]).filter(f=>f.type.startsWith('image/')).slice(0,10);
+ imageList=await Promise.all(files.map(f=>new Promise(resolve=>{const r=new FileReader();r.onload=ev=>resolve({name:f.name,data:ev.target.result});r.readAsDataURL(f)})));
+ imageData=imageList[0]?.data||'';
+ $('imageInfo').textContent=imageList.length?`✓ ${imageList.length} foto siap digunakan. Foto dapat dipakai kembali untuk Carousel dan Video.`:'Belum ada foto.';
+ $('imageGallery').innerHTML='';
+ imageList.forEach((im,i)=>{const box=document.createElement('div');box.style.cssText='position:relative';const pic=document.createElement('img');pic.src=im.data;pic.alt=im.name;pic.style.cssText='width:100%;height:72px;object-fit:cover;border-radius:8px;border:1px solid #ddd';const del=document.createElement('button');del.textContent='×';del.title='Hapus foto';del.style.cssText='position:absolute;right:3px;top:3px;padding:2px 7px;background:#111;color:#fff;border-radius:50%';del.onclick=()=>{imageList.splice(i,1);imageData=imageList[0]?.data||'';renderImageGallery()};box.append(pic,del);$('imageGallery').append(box)});
+});
+function renderImageGallery(){
+ $('imageGallery').innerHTML='';
+ imageList.forEach((im,i)=>{const box=document.createElement('div');box.style.cssText='position:relative';const pic=document.createElement('img');pic.src=im.data;pic.alt=im.name;pic.style.cssText='width:100%;height:72px;object-fit:cover;border-radius:8px;border:1px solid #ddd';const del=document.createElement('button');del.textContent='×';del.title='Hapus foto';del.style.cssText='position:absolute;right:3px;top:3px;padding:2px 7px;background:#111;color:#fff;border-radius:50%';del.onclick=()=>{imageList.splice(i,1);imageData=imageList[0]?.data||'';renderImageGallery();$('imageInfo').textContent=imageList.length?`✓ ${imageList.length} foto siap digunakan.`:'Belum ada foto.';refreshThreadPhotoSelectors()};box.append(pic,del);$('imageGallery').append(box)});
+ refreshThreadPhotoSelectors();
+}
+
+
+function d(){return{
+ p:$('product').value.trim()||'Produk Anda',
+ price:$('price').value.trim()||'Harga terbaik',
+ t:$('target').value.trim()||'calon pembeli',
+ b:$('benefit').value.trim()||'berkualitas dan menarik',
+ tone:$('tone').value
+}}
+
+function applyTone(text,tone){
+ let out=String(text||'');
+ if(tone==='Profesional'){
+   const swaps=[[/\bJujur deh\b/gi,'Mari kita lihat'],[/\bCoba jujur\.?/gi,'Mari pertimbangkan'],[/\bnggak\b/gi,'tidak'],[/\bgak\b/gi,'tidak'],[/\benggak\b/gi,'tidak'],[/\bbanget\b/gi,'sangat'],[/\bKalau kamu\b/gi,'Jika Anda'],[/\bkalau kamu\b/gi,'Jika Anda'],[/\bmenurut kamu\b/gi,'menurut Anda'],[/\bMenurut kamu\b/gi,'Menurut Anda'],[/\bkamu\b/gi,'Anda'],[/\bmu\b/gi,'Anda'],[/\bcek detailnya\b/gi,'tinjau detail produk'],[/\bcek dulu\b/gi,'periksa terlebih dahulu'],[/\bBiar tidak sekadar promosi\b/gi,'Untuk memberikan informasi yang jelas'],[/\bdeh\b/gi,''],[/\bnih\b/gi,'']];
+   swaps.forEach(([re,val])=>out=out.replace(re,val));
+   out=out.replace(/[😅😂😄❤️✨👇💰]/g,'').replace(/[ \t]+\n/g,'\n').replace(/ {2,}/g,' ').replace(/\n{3,}/g,'\n\n');
+   out=out.replace(/\bPilih satu\./g,'Silakan pilih salah satu.').replace(/\bTulis jawabanmu\./g,'Sampaikan jawaban Anda.');
+ } else if(tone==='Lucu & ringan'){
+   const swaps=[[/\bMenurut kamu\b/gi,'Menurutmu nih'],[/\bmenurut kamu\b/gi,'menurutmu nih'],[/\bCoba jujur\.?/gi,'Ngaku dulu, ya 😄'],[/\bJujur deh\b/gi,'Ngaku, deh 😄'],[/\bApa yang paling\b/gi,'Nah, apa yang paling'],[/\bPilih satu\./gi,'Pilih satu aja, jangan ngeles 😆'],[/\bCek detailnya\b/gi,'Intip detailnya dulu, yuk'],[/\bKalau cocok\b/gi,'Kalau cocok, gas pelan-pelan 😄']];
+   swaps.forEach(([re,val])=>out=out.replace(re,val));
+   if(!/[😂😄😆🤣]/.test(out)) out += '\n\nNgobrol santai aja di komentar 😄';
+ } else if(tone==='Elegan'){
+   const swaps=[[/\bJujur deh\b/gi,'Mari mulai dengan satu pertanyaan'],[/\bnggak\b/gi,'tidak'],[/\bgak\b/gi,'tidak'],[/\benggak\b/gi,'tidak'],[/\bKalau kamu\b/gi,'Bila Anda'],[/\bkalau kamu\b/gi,'bila Anda'],[/\bMenurut kamu\b/gi,'Menurut Anda'],[/\bmenurut kamu\b/gi,'menurut Anda'],[/\bkamu\b/gi,'Anda'],[/\bmu\b/gi,'Anda'],[/\bCek detailnya\b/gi,'Pelajari detailnya'],[/\bCek dulu\b/gi,'Pelajari terlebih dahulu'],[/\bBiar tidak sekadar promosi\b/gi,'Untuk memberi gambaran yang lebih jelas'],[/\bSiapa tahu cocok\b/gi,'Semoga sesuai dengan kebutuhan Anda']];
+   swaps.forEach(([re,val])=>out=out.replace(re,val));
+   out=out.replace(/[😅😂😄❤️✨👇💰]/g,'').replace(/[ \t]+\n/g,'\n').replace(/ {2,}/g,' ').replace(/\n{3,}/g,'\n\n');
+ }
+ return out;
+}
+function hideSpecial(){['thread30','carouselResult','videoResult'].forEach(x=>$(x).classList.add('hidden'));$('textActions').style.display='flex'}
+function setText(title,text){hideSpecial();const styled=applyTone(text,$('tone').value);$('resultTitle').textContent=title;$('textResult').textContent=styled;currentText=styled;$('copyBtn').disabled=false;$('txtBtn').disabled=false;$('status').textContent='✓ Hasil siap dengan gaya: '+$('tone').value+'. Tinggal salin atau download.'}
+
+function example(){$('product').value='Kue Kering Premium';$('price').value='Rp85.000';$('target').value='Wanita 25–45 tahun';$('benefit').value='bahan premium, tanpa pengawet, cocok untuk hampers';makeThreads()}
+
+function makeThreads(){
+ const x=d();
+ const text=`${x.p} itu bukan sekadar soal produk.\n\nKalau kamu sedang mencari ${x.p}, mungkin ini bisa jadi pilihan menarik.\n\n✨ ${x.b}\n💰 ${x.price}\n\nMenurut kamu, saat memilih produk seperti ini yang paling penting apa: harga, kualitas, atau pengalaman? 👇`;
+ setText('🧵 Threads',text);
+}
+
+let threadBatch=0;
+function resetThreadSequence(){threadBatch=0;}
+
+function splitBenefits(raw){
+  return raw
+    .replace(/\r/g,'')
+    .split(/\n|,|;|•/)
+    .map(s=>s.trim())
+    .filter(Boolean)
+    .slice(0,5);
+}
+
+function benefitSentence(raw){
+  const b=splitBenefits(raw);
+  if(!b.length) return 'punya manfaat yang jelas';
+  if(b.length===1) return b[0];
+  if(b.length===2) return `${b[0]} dan ${b[1]}`;
+  return `${b[0]}, ${b[1]}, dan ${b[2]}`;
+}
+
+function detectProductKind(product, benefit){
+ const t=(product+' '+benefit).toLowerCase();
+ if(/ebook|e-book|buku digital|pdf|template|worksheet|kelas online|materi belajar|digital product|produk digital|panduan/.test(t)) return 'digital';
+ if(/bakso|makanan|kuliner|kue|kopi|sambal|camilan|snack|roti|minuman|masakan|dessert|mie|mi ayam|sate/.test(t)) return 'food';
+ if(/skincare|serum|moisturizer|pelembap|sunscreen|sabun wajah|kosmetik|lipstik|makeup|perawatan kulit/.test(t)) return 'beauty';
+ if(/kaos|baju|kemeja|celana|fashion|hijab|sepatu|tas|sandal|pakaian|dress/.test(t)) return 'fashion';
+ if(/jasa|desain|konsultasi|les privat|fotografi|servis|service|freelance|admin media sosial/.test(t)) return 'service';
+ return 'general';
+}
+async function make30(){
+ const endpoint=($('aiEndpoint')?.value||'').trim();
+ if(endpoint){
+   const x=d();
+   $('status').textContent='⏳ Menghubungi backend AI…';
+   const btns=document.querySelectorAll('.tool'); btns.forEach(b=>b.disabled=true);
+   try{
+     const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product:x.p,price:x.price,target:x.t,benefits:x.b,tone:x.tone,days:3,postsPerDay:3})});
+     const data=await response.json().catch(()=>({}));
+     if(!response.ok) throw new Error(data.error||'Backend AI memberi respons '+response.status);
+     if(!Array.isArray(data.posts)||data.posts.length!==9) throw new Error('Format respons tidak sesuai. Backend harus mengembalikan tepat 9 postingan.');
+     window.threadPosts=data.posts.map((p,i)=>({title:String(p.title||`Hari ${Math.floor(i/3)+1} • Post ${i%3+1}`),text:applyTone(String(p.text||''),x.tone)}));
+     $('resultTitle').textContent='🧵 Paket Threads • 3 Hari (AI)'; $('thread30').classList.remove('hidden'); $('carouselResult').classList.add('hidden'); $('videoResult').classList.add('hidden'); $('textActions').style.display='none';
+     $('days').innerHTML=window.threadPosts.map((p,i)=>`<div class="day" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><b style="font-size:15px">${escapeHTML(p.title)}</b><span style="font-size:11px;padding:4px 8px;border-radius:99px;background:#fff2c9;color:#725700">${['Ngobrol','Tips praktis','Kenalkan produk'][i%3]}</span></div><div style="margin-top:8px;padding:13px;background:#f7f8fa;border-radius:10px;white-space:pre-wrap;line-height:1.55">${escapeHTML(p.text)}</div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="primary" onclick="copy30(${i})">📋 Salin teks</button><button class="light" onclick="download30(${i})">⬇ Simpan teks</button></div></div>`).join('');
+     $('status').textContent='✓ 9 postingan dibuat oleh AI melalui backend. Periksa fakta produk sebelum diposting.';
+   }catch(err){$('status').textContent='⚠️ Gagal menghubungi AI: '+err.message+'. Periksa alamat backend dan koneksi, lalu coba lagi.';}
+   finally{btns.forEach(b=>b.disabled=false);}
+   return;
+ }
+ threadBatch++;
+ const x=d(), product=x.p.trim(), price=x.price.trim(), benefits=splitBenefits(x.b), kind=detectProductKind(product,x.b);
+ const b1=benefits[0]||'manfaat yang sesuai kebutuhan';
+ const b2=benefits[1]||'informasi yang jelas sebelum membeli';
+ const benefitText=benefitSentence(x.b);
+ const pools={
+  food:{
+   reach:[
+    `Pertanyaan serius buat yang suka jajan: kamu lebih sering jatuh hati karena aroma, rasa, atau teksturnya? 😄\n\nKalau soal ${product}, bagian mana yang paling bikin penasaran?`,
+    `Ada makanan yang kelihatannya sederhana, tapi kalau rasanya pas malah kepikiran terus.\n\nMenurutmu, apa yang bikin makanan layak dibeli lagi: rasa yang konsisten, porsi, atau harganya?`,
+    `Kalau lagi pengin jajan, kamu tipe yang pesan menu andalan terus atau sengaja coba sesuatu yang baru?\n\nAku penasaran, biasanya kamu tim yang mana?`
+   ],
+   trust:[
+    `Buatku, memilih makanan bukan cuma soal tampilannya. Rasa, kebersihan, porsi, dan harga juga perlu masuk pertimbangan.\n\nKalau kamu, hal pertama yang biasanya diperhatikan apa?`,
+    `Foto makanan bisa bikin lapar, tapi pengalaman makan tetap yang menentukan mau beli lagi atau tidak.\n\nMakanya, cari informasi yang jelas tentang bahan dan cara penyajiannya juga penting.`,
+    `Selera orang beda-beda. Ada yang mengejar pedas, ada yang suka gurih, ada juga yang paling peduli tekstur.\n\nJadi sebelum memilih, paling enak tahu dulu apa yang memang kamu suka.`
+   ],
+   sell:[
+    `Kalau kamu sedang mencari ${product}, ini beberapa hal yang bisa dipertimbangkan: ${benefitText}.\n\nHarga: ${price}.\n\nCek detailnya dulu, lalu pilih sesuai seleramu.`,
+    `Lagi ingin mencoba ${product}? Yang perlu kamu tahu: ${benefitText}.\n\nHarganya ${price}. Kalau cocok dengan selera dan budget, boleh masuk daftar jajan berikutnya.`,
+    `Bukan mau bilang semua orang pasti suka—selera memang beda-beda. 😄\n\nTapi kalau kamu mencari ${b1}, ${product} bisa kamu cek lebih lanjut. Harga ${price}.`
+   ]
+  },
+  fashion:{
+   reach:[
+    `Pernah punya baju yang awalnya biasa saja, tapi malah paling sering dipakai?\n\nMenurutmu, baju favorit itu menang di bahan, model, atau gampang dipadukan?`,
+    `Kalau memilih ${product}, kamu lebih suka warna aman yang gampang dipadukan atau warna yang langsung mencuri perhatian?\n\nAku tim yang mana, ya? Masih tergantung modelnya 😄`,
+    `Isi lemari penuh belum tentu bikin gampang memilih baju. 😂\n\nKalau mau beli pakaian baru, hal apa yang paling kamu pertimbangkan dulu?`
+   ],
+   trust:[
+    `Sebelum membeli pakaian, cek detail bahan, ukuran, dan cara perawatannya. Foto bagus saja belum cukup untuk memastikan barangnya cocok buat kita.`,
+    `Model yang sedang tren belum tentu paling sering dipakai. Kadang justru pakaian sederhana yang nyaman dan mudah dipadukan jadi andalan.`,
+    `Tips kecil saat memilih ${product}: bayangkan minimal dua atau tiga cara memadukannya dengan pakaian yang sudah kamu punya. Kalau mudah, biasanya lebih berguna.`
+   ],
+   sell:[
+    `${product} bisa kamu pertimbangkan kalau yang dicari adalah ${benefitText}.\n\nHarga: ${price}. Cek ukuran dan detailnya dulu supaya pilihanmu lebih pas.`,
+    `Sedang mencari ${product} untuk dipakai sehari-hari? Detail yang tersedia: ${benefitText}. Harganya ${price}. Lihat dulu apakah sesuai gaya dan kebutuhanmu.`,
+    `Baju yang cocok bukan cuma yang terlihat bagus di foto, tetapi juga yang nyaman dipakai. Kalau ${product} sesuai kebutuhanmu, cek detail dan harga ${price} sebelum memutuskan.`
+   ]
+  },
+  beauty:{
+   reach:[
+    `Kalau memilih produk perawatan kulit, kamu biasanya membaca komposisi dulu, mencari ulasan, atau melihat apakah cocok dengan kebutuhan kulitmu?`,
+    `Pernah tergoda mencoba skincare karena ramai dibicarakan, lalu ingat kalau kebutuhan kulit setiap orang berbeda? 😅\n\nApa yang biasanya kamu cek sebelum membeli?`,
+    `Dalam memilih skincare, kamu lebih suka rutinitas sederhana atau senang mencoba banyak langkah? Kenapa?`
+   ],
+   trust:[
+    `Untuk produk perawatan kulit, jangan hanya terpaku pada tren. Perhatikan komposisi, petunjuk penggunaan, dan kesesuaiannya dengan kebutuhan kulitmu.`,
+    `Ulasan orang lain bisa jadi bahan pertimbangan, tetapi hasil setiap orang dapat berbeda. Cari informasi produk yang jelas dan hentikan penggunaan jika muncul reaksi yang mengganggu.`,
+    `Sebelum membeli ${product}, coba cek tiga hal: fungsi produk, cara pakai, dan informasi bahan. Dengan begitu, keputusanmu tidak hanya berdasarkan kemasan atau tren.`
+   ],
+   sell:[
+    `Kalau kamu sedang mencari ${product}, informasi yang tersedia menyebutkan: ${benefitText}.\n\nHarga: ${price}. Periksa komposisi dan petunjuknya untuk memastikan sesuai dengan kebutuhanmu.`,
+    `${product} menawarkan ${benefitText}. Harganya ${price}. Silakan cek detail bahan dan cara penggunaan sebelum memutuskan apakah produk ini cocok untuk rutinitasmu.`,
+    `Tidak semua skincare cocok untuk semua orang. Kalau kamu tertarik dengan ${product}, pelajari detailnya terlebih dahulu: ${benefitText}. Harga ${price}.`
+   ]
+  },
+  service:{
+   reach:[
+    `Buat yang pernah memakai jasa profesional, apa yang paling bikin tenang: komunikasi jelas, proses rapi, hasil sesuai brief, atau pengerjaan tepat waktu?`,
+    `Pernah bingung mau mengerjakan sendiri atau menyerahkan pekerjaan ke orang yang lebih ahli? Apa yang biasanya jadi pertimbanganmu?`,
+    `Menurutmu, pengalaman memakai jasa yang bagus itu lebih ditentukan hasil akhirnya atau komunikasi selama prosesnya? Ceritakan alasannya.`
+   ],
+   trust:[
+    `Sebelum memakai jasa, sepakati dulu ruang lingkup pekerjaan, hasil yang akan diterima, waktu pengerjaan, dan revisi jika ada. Ini membantu kedua pihak punya ekspektasi yang sama.`,
+    `Portofolio penting, tetapi jangan lupa melihat apakah gaya dan pengalaman penyedia jasa sesuai dengan kebutuhanmu. Yang bagus untuk satu proyek belum tentu tepat untuk proyek lain.`,
+    `Brief yang jelas sering membuat proses kerja lebih lancar. Siapkan tujuan, contoh referensi, tenggat, dan hal yang wajib ada sebelum memulai kerja sama.`
+   ],
+   sell:[
+    `Kalau kamu membutuhkan ${product}, layanan ini bisa dipertimbangkan. Fokus yang ditawarkan: ${benefitText}.\n\nHarga: ${price}. Hubungi kami untuk mencocokkan kebutuhan dan ruang lingkup pekerjaan.`,
+    `Sedang mencari bantuan untuk ${product}? Sebelum memutuskan, kamu bisa menanyakan proses, hasil yang diterima, dan detail layanan. Informasi singkat: ${benefitText}. Harga ${price}.`,
+    `Setiap kebutuhan bisa berbeda. Jika ${product} relevan dengan pekerjaanmu, cek detail layanan ${benefitText} dan harga ${price}. Kita bisa mulai dari membahas kebutuhanmu dulu.`
+   ]
+  },
+  digital:{
+   reach:[
+    `Pernah menyimpan banyak tips dari internet, tapi saat mau praktik malah bingung mulai dari mana? 😅\n\nKamu lebih terbantu oleh contoh siap pakai, panduan langkah demi langkah, atau video penjelasan?`,
+    `Kalau membeli e-book atau template, apa yang paling bikin kamu merasa uangnya tidak sia-sia: isinya praktis, mudah dipahami, atau bisa langsung dicoba?`,
+    `Jujur, kamu tipe yang langsung membaca e-book sampai selesai atau lompat ke bagian yang paling dibutuhkan dulu? 😂\n\nBiasanya kamu pilih cara yang mana?`
+   ],
+   trust:[
+    `Produk digital akan lebih berguna kalau isinya membantu menyelesaikan satu kebutuhan yang jelas. Sebelum membeli, cek daftar isi, contoh halaman, dan format file yang akan diterima.`,
+    `E-book bukan sulap yang otomatis membuat hasil berubah. Nilainya ada pada informasi dan panduan yang bisa dipelajari lalu dipraktikkan sesuai situasi masing-masing.`,
+    `Sebelum membeli panduan digital, tanyakan pada diri sendiri: masalah apa yang ingin saya selesaikan, dan apakah isi produk ini memang membahasnya? Itu lebih berguna daripada membeli karena judulnya menarik.`
+   ],
+   sell:[
+    `Kalau kamu sedang mencari panduan tentang ${product}, produk ini membahas: ${benefitText}.\n\nHarga: ${price}. Cek deskripsi dan contoh isinya terlebih dahulu agar tahu apakah sesuai kebutuhanmu.`,
+    `Buat yang sering bingung mulai membuat konten, ${product} bisa menjadi bahan belajar. Fokus isinya: ${benefitText}. Harganya ${price}. Pelajari detailnya sebelum memutuskan.`,
+    `Kalau kamu butuh panduan yang bisa dibuka kembali saat praktik, cek ${product}. Informasi manfaat: ${benefitText}. Harga ${price}. Pastikan topiknya sesuai dengan hal yang ingin kamu pelajari.`
+   ]
+  },
+  general:{
+   reach:[
+    `Sebelum membeli sesuatu, kamu biasanya lebih percaya pengalaman sendiri, rekomendasi teman, atau ulasan orang lain? Kenapa?`,
+    `Pernah membeli sesuatu karena terlihat menarik, lalu sadar ternyata bukan yang kamu butuhkan? Apa yang kamu pelajari dari pengalaman itu?`,
+    `Kalau harus memilih satu: produk yang murah, yang awet, atau yang paling sesuai kebutuhan—mana yang biasanya kamu utamakan?`
+   ],
+   trust:[
+    `Cara sederhana menghindari salah beli: tentukan dulu kebutuhan utamamu, lalu bandingkan manfaat dan harga. Jangan sampai membeli fitur yang sebenarnya tidak akan dipakai.`,
+    `Ulasan bisa membantu, tetapi lihat detail pengalamannya. Cari tahu apa yang cocok, apa yang kurang, dan untuk kebutuhan seperti apa produk itu digunakan.`,
+    `Produk yang tepat bukan selalu yang paling mahal atau paling ramai dibicarakan. Yang penting, manfaatnya sesuai dengan kebutuhan dan anggaranmu.`
+   ],
+   sell:[
+    `Kalau kamu sedang mempertimbangkan ${product}, berikut informasi yang bisa dicek: ${benefitText}.\n\nHarga: ${price}. Cocokkan dulu dengan kebutuhanmu sebelum memutuskan.`,
+    `${product} menawarkan ${benefitText}. Dengan harga ${price}, langkah terbaik adalah membaca detailnya dan membandingkan dengan pilihan lain yang kamu pertimbangkan.`,
+    `Mungkin ${product} sesuai dengan yang kamu cari, terutama jika kamu membutuhkan ${b1}. Harganya ${price}. Cek detail lengkapnya untuk melihat apakah memang cocok.`
+   ]
+  }
+ };
+ const pool=pools[kind];
+ const ctas={
+  reach:['Penasaran, kamu pilih yang mana?','Punya pengalaman serupa? Ceritakan, dong.','Jawab dengan alasanmu sendiri—aku ingin tahu sudut pandangmu.'],
+  trust:['Semoga membantu kamu mempertimbangkan pilihan.','Simpan kalau ingin mengingat tips ini.','Apa ada hal lain yang biasanya kamu cek?'],
+  sell:['Kalau relevan dengan kebutuhanmu, cek detailnya dulu.','Tidak perlu buru-buru—pastikan sesuai kebutuhan dan budget.','Kalau masih ada yang ingin ditanyakan, silakan tanya sebelum memutuskan.']
+ };
+ const posts=[];
+ const variant=(threadBatch-1)%3;
+ const naturalReachCta=[
+   'Kamu sendiri biasanya bagaimana?',
+   'Penasaran, pengalamanmu seperti apa?',
+   'Kalau kamu punya cara lain, ceritakan juga.'
+ ];
+ const naturalTrustCta=[
+   'Bagian mana yang paling sering kamu alami?',
+   'Ada hal lain yang selalu kamu pertimbangkan?',
+   'Semoga ini membantu kamu memilih dengan lebih tenang.'
+ ];
+ const naturalSellCta=[
+   'Kalau terasa relevan, kamu bisa pelajari detailnya dulu.',
+   'Tidak harus buru-buru membeli—pastikan memang sesuai kebutuhanmu.',
+   'Kalau ada yang belum jelas, tanyakan sebelum memutuskan.'
+ ];
+ function finishPost(body,kindOfPost,idx){
+   let text=String(body||'').trim();
+   // Hindari CTA tambahan bila teks sudah mengajukan pertanyaan atau sudah punya ajakan yang jelas.
+   const alreadyInvites=/\?\s*$/.test(text)||/\b(ceritakan|jawab|pilih satu|tulis komentar|bagikan pengalaman)\b/i.test(text);
+   if(kindOfPost==='reach'){
+     if(!alreadyInvites && !/\b(kamu|menurutmu|bagaimana)\b/i.test(text.slice(-100))) text+='\n\n'+naturalReachCta[(variant+idx)%naturalReachCta.length];
+   } else if(kindOfPost==='trust'){
+     // Tips tidak harus selalu diakhiri CTA; selingi penutup reflektif agar terdengar seperti manusia.
+     if((idx+variant)%2===1 && !alreadyInvites) text+='\n\n'+naturalTrustCta[(idx+variant)%naturalTrustCta.length];
+   } else {
+     // Penawaran tetap lembut, tetapi jangan menumpuk CTA jika sudah ada ajakan dalam teks.
+     if(!/\b(cek detail|pelajari detail|tanyakan|hubungi|lihat detail)\b/i.test(text)) text+='\n\n'+naturalSellCta[(idx+variant)%naturalSellCta.length];
+   }
+   return text.replace(/\n{3,}/g,'\n\n');
+ }
+ for(let day=0;day<3;day++){
+   const shift=(variant+day)%3;
+   const reach=pool.reach[(shift+day)%pool.reach.length];
+   const trust=pool.trust[(shift+1)%pool.trust.length];
+   const sell=pool.sell[(shift+2)%pool.sell.length];
+   posts.push(
+    [`Hari ${day+1} • Post 1 — Ngobrol`,finishPost(reach,'reach',day)],
+    [`Hari ${day+1} • Post 2 — Tips`,finishPost(trust,'trust',day)],
+    [`Hari ${day+1} • Post 3 — Kenalkan produk`,finishPost(sell,'sell',day)]
+   );
+ }
+ $('resultTitle').textContent='🧵 Paket Threads • 3 Hari';
+ $('thread30').classList.remove('hidden');
+ $('carouselResult').classList.add('hidden');
+ $('videoResult').classList.add('hidden');
+ $('textActions').style.display='none';
+ window.threadPosts=posts.map(p=>({title:p[0],text:applyTone(p[1],x.tone)}));
+ $('days').innerHTML=window.threadPosts.map((p,i)=>`
+  <div class="day" style="grid-column:1/-1">
+   <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><b style="font-size:15px">${p.title}</b><span style="font-size:11px;padding:4px 8px;border-radius:99px;background:#fff2c9;color:#725700">${['Ngobrol','Tips praktis','Kenalkan produk'][i%3]}</span></div>
+   <div style="margin-top:8px;padding:13px;background:#f7f8fa;border-radius:10px;white-space:pre-wrap;line-height:1.55">${escapeHTML(p.text)}</div>
+   <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="primary" onclick="copy30(${i})">📋 Salin teks</button><button class="light" onclick="download30(${i})">⬇ Simpan teks</button></div>
+  </div>`).join('');
+ $('status').textContent='✓ 9 postingan dibuat dengan konteks '+({food:'kuliner',fashion:'fashion',beauty:'perawatan kulit',service:'jasa',digital:'produk digital',general:'produk'}[kind])+' dan gaya '+x.tone+'. Kalimat disusun dengan variasi sudut pandang dan CTA yang tidak selalu sama. Tetap baca ulang sebelum diposting.';
+}
+
+function escapeHTML(value){return String(value||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
+function copy30(i){
+  navigator.clipboard?.writeText(window.threadPosts[i].text);
+  $('status').textContent='✓ Postingan berhasil di-copy.';
+}
+function downloadThreadsPackage(){
+ if(!window.threadPosts || !window.threadPosts.length){$('status').textContent='Buat postingan Threads terlebih dahulu.';return;}
+ const sections=window.threadPosts.map((p,i)=>`${p.title}\n\n${p.text}\n\n${'—'.repeat(28)}`).join('\n\n');
+ const guide='PAKET THREADS 3 HARI\n\nCara pakai sederhana:\n1. Buka Threads dan buat postingan baru.\n2. Tekan Salin teks pada postingan yang ingin dipakai.\n3. Tempel teks di Threads. Jika ingin memakai foto, pilih foto langsung dari galeri di Threads.\n\nPosting dilakukan manual di aplikasi Threads.\n\n';
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([guide+sections],{type:'text/plain;charset=utf-8'}));a.download='Paket-Threads-3-Hari.txt';a.click();
+ $('status').textContent='✓ Semua teks berhasil disimpan. Tidak perlu mengunggah foto ke JualanAI untuk Threads.';
+}
+function download30(i){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([window.threadPosts[i].text],{type:'text/plain;charset=utf-8'}));
+  a.download=`Threads-${window.threadPosts[i].title.replaceAll(' ','-')}.txt`;
+  a.click();
+  $('status').textContent='✓ Postingan berhasil di-download.';
+}
+function makeCarousel(){
+ const x=d();hideSpecial();$('resultTitle').textContent='🖼️ Carousel';$('textActions').style.display='none';$('carouselResult').classList.remove('hidden');$('slides').innerHTML='';
+ slidesData=[
+  ['HOOK',`Cari ${x.p} yang bukan cuma menarik, tapi juga layak dibeli?`],
+  ['MASALAH',`Banyak orang bingung memilih karena terlalu banyak pilihan.`],
+  ['SOLUSI',`Kenapa ${x.p} layak dipertimbangkan?`],
+  ['KEUNGGULAN',x.b],
+  ['HARGA',x.price],
+  ['CTA',`Penasaran? Cek detail ${x.p} sekarang.`]
+ ];
+ slidesData.forEach((s,i)=>{
+  const box=document.createElement('div');box.className='slide';
+  const c=document.createElement('canvas');c.width=1080;c.height=1080;drawSlide(c,s[0],s[1],i);
+  const b=document.createElement('button');b.className='dark';b.textContent=`⬇ Download Picture ${i+1}`;b.onclick=()=>downloadCanvas(c,`JualanAI-Car${i+1}.png`);
+  box.append(c,b);$('slides').append(box);
+ });
+ $('status').textContent='✓ 6 picture carousel siap di-download.';
+}
+function drawSlide(c,tag,text,i){
+ const x=c.getContext('2d');x.fillStyle='#111318';x.fillRect(0,0,c.width,c.height);
+ const chosen=(imageList[i%Math.max(1,imageList.length)]||{}).data||imageData;if(chosen){const img=new Image();img.onload=()=>{const sc=Math.min(800/img.width,500/img.height);x.drawImage(img,(1080-img.width*sc)/2,90,img.width*sc,img.height*sc);drawSlideText()};img.src=chosen}else drawSlideText();
+ function drawSlideText(){x.fillStyle='#e6b94f';x.font='bold 34px Arial';x.fillText(tag,70,700);x.fillStyle='#fff';x.font='bold 58px Arial';wrap(x,text,70,790,900,70);x.fillStyle='#aaa';x.font='24px Arial';x.fillText('JualanAI',70,1015)}
+ function wrap(ctx,t,px,py,max,lh){let line='';for(const w of t.split(' ')){let z=line?line+' '+w:w;if(ctx.measureText(z).width>max&&line){ctx.fillText(line,px,py);line=w;py+=lh}else line=z}if(line)ctx.fillText(line,px,py)}
+}
+function downloadCanvas(c,name){const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=name;a.click()}
+function downloadAllSlides(){slidesData.forEach((s,i)=>{const c=document.createElement('canvas');c.width=1080;c.height=1080;drawSlide(c,s[0],s[1],i);setTimeout(()=>downloadCanvas(c,`JualanAI-Car${i+1}.png`),i*250)})}
+
+function makeVideo(){
+ const x=d();hideSpecial();$('resultTitle').textContent='🎬 Video';$('textActions').style.display='none';$('videoResult').classList.remove('hidden');
+ videoScenes=[['HOOK',`Jangan pilih ${x.p} sebelum tahu ini.`],['MASALAH',`Banyak orang masih bingung memilih.`],['SOLUSI',`${x.p}: ${x.b}.`],['BUKTI','Tampilkan detail, kemasan, proses, atau testimoni.'],['CTA',`Cek detail ${x.p} sekarang — ${x.price}.`]];
+ drawVideoFrame(0);$('status').textContent='✓ Video siap di-preview. Durasi prototype 15 detik.';
+}
+function drawVideoFrame(idx){
+ const c=$('videoCanvas'),x=c.getContext('2d'),s=videoScenes[idx]||videoScenes[0];x.fillStyle='#111318';x.fillRect(0,0,720,1280);
+ const chosen=(imageList[idx%Math.max(1,imageList.length)]||{}).data||imageData;if(chosen){const img=new Image();img.onload=()=>{const sc=Math.min(600/img.width,520/img.height);x.drawImage(img,(720-img.width*sc)/2,80,img.width*sc,img.height*sc);text()};img.src=chosen}else text();
+ function text(){x.fillStyle='#e6b94f';x.font='bold 28px Arial';x.fillText(s[0],55,850);x.fillStyle='#fff';x.font='bold 52px Arial';wrap(s[1],55,925,610,62);x.fillStyle='#777';x.font='24px Arial';x.fillText('JualanAI',55,1190)}
+ function wrap(t,px,py,max,lh){let l='';for(const w of t.split(' ')){let z=l?l+' '+w:w;if(x.measureText(z).width>max&&l){x.fillText(l,px,py);l=w;py+=lh}else l=z}if(l)x.fillText(l,px,py)}
+}
+function previewVideo(){if(!videoScenes.length)return;let i=0;clearInterval(timer);timer=setInterval(()=>{drawVideoFrame(i);i++;if(i>=videoScenes.length){clearInterval(timer);i=0}},3000)}
+function downloadVideo(){
+ if(!videoScenes.length)return;
+ const c=$('videoCanvas');
+ if(!c.captureStream||!window.MediaRecorder){$('status').textContent='Browser ini belum mendukung export video.';return}
+ const stream=c.captureStream(30);let mime='video/webm';try{if(MediaRecorder.isTypeSupported('video/mp4'))mime='video/mp4'}catch(e){}
+ let r;try{r=new MediaRecorder(stream,{mimeType:mime})}catch(e){r=new MediaRecorder(stream)}
+ const chunks=[];r.ondataavailable=e=>e.data.size&&chunks.push(e.data);r.onstop=()=>{const ext=(r.mimeType||mime).includes('mp4')?'mp4':'webm';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(chunks,{type:r.mimeType||mime}));a.download=`JualanAI-Video.${ext}`;a.click();$('status').textContent=ext==='mp4'?'✓ MP4 berhasil di-download.':'✓ Video berhasil di-download sebagai WebM. Untuk MP4 konsisten perlu renderer server online.'};r.start();
+ let i=0;r.onstart=()=>{};const t=setInterval(()=>{drawVideoFrame(i);i++;if(i>=videoScenes.length){clearInterval(t);setTimeout(()=>r.stop(),400)}},3000);
+}
+function makeCaption(){const x=d();setText('✍️ Caption',`Ada yang sedang mencari ${x.p}? 👀\n\nBuat kamu yang ${x.t}, produk ini bisa jadi pilihan menarik.\n\n✨ ${x.b}\n💰 ${x.price}\n\nTulis “INFO” kalau mau tahu detailnya.`)}
+function makeSales(){const x=d();setText('💰 Copy Jualan',`Hai 👋\nKalau Anda sedang mencari ${x.p}, mungkin produk ini cocok.\n\nKenapa menarik?\n✨ ${x.b}\n\nHarga: ${x.price}\n\nKalau mau, saya bisa kirim detail lengkapnya.`)}
+function makeCalendar(){const x=d();setText('📅 Kalender 7 Hari',`HARI 1 — Kenalkan ${x.p}\nHARI 2 — Keunggulan: ${x.b}\nHARI 3 — Edukasi untuk ${x.t}\nHARI 4 — Behind the scenes\nHARI 5 — FAQ pelanggan\nHARI 6 — Testimoni/bukti\nHARI 7 — Penawaran + CTA`)}
+function copyText(){navigator.clipboard?.writeText(currentText);$('status').textContent='✓ Berhasil di-copy.'}
+function downloadText(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([currentText],{type:'text/plain;charset=utf-8'}));a.download='JualanAI-Hasil.txt';a.click()}
+if($('aiEndpoint')) $('aiEndpoint').addEventListener('input',()=>{$('aiModeStatus').textContent=$('aiEndpoint').value.trim()?'Backend AI akan digunakan untuk Paket Threads':'Mode demo lokal';});
+function resetApp(){clearInterval(timer);threadBatch=0;['product','price','target','benefit'].forEach(i=>$(i).value='');$('image').value='';imageData='';imageList=[];$('imageGallery').innerHTML='';$('imageInfo').textContent='Belum ada foto.';$('textResult').textContent='Pilih salah satu alat di sebelah kiri.';$('thread30').classList.add('hidden');$('carouselResult').classList.add('hidden');$('videoResult').classList.add('hidden');$('status').textContent='Siap membuat konten baru.'}
+</script>
+</body></html>
