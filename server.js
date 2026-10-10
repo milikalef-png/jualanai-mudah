@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 const app = express();
 app.use(express.json({ limit: '100kb' }));
-app.use(express.static(new URL('./public', import.meta.url).pathname));
+app.use(express.static(new URL('.', import.meta.url).pathname));
 const PORT = Number(process.env.PORT || 3000);
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
 
