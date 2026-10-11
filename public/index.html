@@ -36,7 +36,7 @@ label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}input,texta
  <label>Harga</label><input id="price" placeholder="Rp85.000">
  <label>Calon pembeli <span style="font-weight:400;color:#888">(opsional)</span></label><input id="target" placeholder="Contoh: orang yang suka camilan premium">
  <label>Keunggulan produk</label><textarea id="benefit" placeholder="Premium, tanpa pengawet, cocok untuk hampers"></textarea>
- <label>Gaya konten</label><select id="tone" onchange="resetThreadSequence()"><option>Santai & natural</option><option>Profesional</option><option>Lucu & ringan</option><option>Elegan</option></select><div class="small" style="margin-top:5px">Gaya memengaruhi pilihan kata dan nada tulisan saat kamu membuat konten berikutnya.</div>
+ <label>Gaya konten</label><select id="tone" onchange="resetThreadSequence();; if(!document.getElementById('thread30').classList.contains('hidden')) make30()"><option>Santai & natural</option><option>Profesional</option><option>Lucu & ringan</option><option>Elegan</option></select><div class="small" style="margin-top:5px">Gaya memengaruhi pilihan kata dan nada tulisan saat kamu membuat konten berikutnya.</div>
  <label>Foto untuk Carousel & Video <span style="font-weight:400;color:#888">(opsional, maksimal 10)</span></label><input id="image" type="file" accept="image/*" multiple>
  <div class="small" id="imageInfo">Foto tidak diperlukan untuk Threads. Unggah di sini hanya jika ingin membuat Carousel atau Video.</div><div id="imageGallery" style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:9px"></div>
 
